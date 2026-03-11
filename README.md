@@ -1,5 +1,5 @@
 Muhammad Rizky Febrianto | 2409116045
-# Arkivee - Aplikasi Manajemen Surat
+# Mini Project 1
 
 ## Deskripsi Aplikasi
 
@@ -82,3 +82,5 @@ Halaman daftar semua surat yang tersimpan. Setiap surat ditampilkan dalam bentuk
 - **Update A Letter**
 
 Halaman untuk mengedit data surat yang sudah ada. Form-nya sama seperti Create, namun field sudah terisi dengan data lama sehingga pengguna tinggal mengubah bagian yang diperlukan saja. Setelah selesai, tekan **Simpan** untuk menyimpan perubahan.
+
+# Mini Project 2
