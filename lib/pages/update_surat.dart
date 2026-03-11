@@ -14,26 +14,32 @@ class UpdateSuratPage extends StatefulWidget {
 }
 
 class _UpdateSuratPageState extends State<UpdateSuratPage> {
+
   final controller = Get.find<SuratController>();
+
+  final formKey = GlobalKey<FormState>();
 
   late TextEditingController nomor;
   late TextEditingController perihal;
   late TextEditingController tanggal;
   late TextEditingController asalTujuan;
+
   late String kategori;
 
   @override
   void initState() {
     super.initState();
+
     nomor = TextEditingController(text: widget.surat.nomor);
     perihal = TextEditingController(text: widget.surat.perihal);
     tanggal = TextEditingController(text: widget.surat.tanggal);
     asalTujuan = TextEditingController(text: widget.surat.asalTujuan);
+
     kategori = widget.surat.kategori;
   }
 
-  // buka kalender dan isi field tanggal
   Future<void> pilihTanggal() async {
+
     final hasil = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -42,150 +48,160 @@ class _UpdateSuratPageState extends State<UpdateSuratPage> {
     );
 
     if (hasil != null) {
-      tanggal.text =
-          "${hasil.day.toString().padLeft(2, '0')}/${hasil.month.toString().padLeft(2, '0')}/${hasil.year}";
+      tanggal.text = "${hasil.day}/${hasil.month}/${hasil.year}";
     }
   }
 
-  Widget labelField(String label, Widget field) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 6),
-        field,
-        const SizedBox(height: 12),
-      ],
-    );
-  }
+  Widget inputField(TextEditingController ctrl, String label) {
 
-  Widget inputField(TextEditingController ctrl, String hint) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: TextField(
-          controller: ctrl,
-          decoration: InputDecoration(hintText: hint, border: InputBorder.none),
+    return TextFormField(
+      controller: ctrl,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
+
+      validator: (value) {
+
+        if (value == null || value.isEmpty) {
+          return "$label wajib diisi";
+        }
+
+        /// VALIDASI NOMOR SURAT DUPLIKAT
+        if (label == "Nomor Surat") {
+          if (controller.nomorSudahAda(value, kecuali: widget.surat)) {
+            return "Nomor surat sudah digunakan";
+          }
+        }
+
+        return null;
+      },
     );
   }
 
   void simpan() {
-    if (nomor.text.isEmpty ||
-        perihal.text.isEmpty ||
-        tanggal.text.isEmpty ||
-        asalTujuan.text.isEmpty) {
-      Get.snackbar("Gagal", "Data tidak boleh kosong",
-          backgroundColor: Colors.red, colorText: Colors.white);
-      return;
+
+    if (formKey.currentState!.validate()) {
+
+      controller.updateSurat(
+        widget.surat,
+        nomor.text,
+        perihal.text,
+        tanggal.text,
+        asalTujuan.text,
+        kategori,
+      );
+
+      Get.back();
     }
-
-    if (controller.nomorSudahAda(nomor.text, kecuali: widget.surat)) {
-      Get.snackbar("Gagal", "Nomor surat sudah digunakan",
-          backgroundColor: Colors.red, colorText: Colors.white);
-      return;
-    }
-
-    controller.updateSurat(
-      widget.surat,
-      nomor.text,
-      perihal.text,
-      tanggal.text,
-      asalTujuan.text,
-      kategori,
-    );
-
-    Get.back();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Column(
         children: [
+
           const PageHeader(title: "Update A Letter"),
+
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  labelField("Nomor Surat", inputField(nomor, "Masukkan nomor surat")),
-                  labelField("Perihal", inputField(perihal, "Masukkan perihal")),
 
-                  // field tanggal dengan tombol kalender
-                  labelField(
-                    "Tanggal Surat",
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: tanggal,
-                                readOnly: true,
-                                decoration: const InputDecoration(
-                                  hintText: "dd/mm/yyyy",
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.calendar_today,
-                                  color: Colors.blue),
-                              onPressed: pilihTanggal,
-                            ),
-                          ],
+              child: Form(
+                key: formKey,
+
+                child: Column(
+                  children: [
+
+                    inputField(nomor, "Nomor Surat"),
+                    const SizedBox(height: 12),
+
+                    inputField(perihal, "Perihal"),
+                    const SizedBox(height: 12),
+
+                    TextFormField(
+                      controller: tanggal,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: "Tanggal",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.calendar_today),
+                          onPressed: pilihTanggal,
+                        ),
+                      ),
+
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Tanggal wajib diisi";
+                        }
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    inputField(asalTujuan, "Asal / Tujuan"),
+                    const SizedBox(height: 12),
+
+                    DropdownButtonFormField(
+                      value: kategori,
+                      items: ["Masuk", "Keluar"]
+                          .map((e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(e),
+                              ))
+                          .toList(),
+                      onChanged: (v) {
+                        setState(() {
+                          kategori = v!;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        labelText: "Kategori",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),
-                  ),
 
-                  labelField("Asal / Tujuan", inputField(asalTujuan, "Masukkan asal atau tujuan")),
+                    const SizedBox(height: 20),
 
-                  // dropdown kategori
-                  labelField(
-                    "Kategori Surat",
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: DropdownButton<String>(
-                          value: kategori,
-                          isExpanded: true,
-                          underline: const SizedBox(),
-                          items: ["Masuk", "Keluar"]
-                              .map((e) =>
-                                  DropdownMenuItem(value: e, child: Text(e)))
-                              .toList(),
-                          onChanged: (v) => setState(() => kategori = v!),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+
+                        onPressed: simpan,
+
+                        child: const Text(
+                          "Simpan",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      onPressed: simpan,
-                      child: const Text("Simpan", style: TextStyle(fontSize: 16)),
-                    ),
-                  ),
-                ],
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );
