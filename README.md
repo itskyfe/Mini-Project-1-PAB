@@ -26,11 +26,11 @@ State management pada aplikasi ini menggunakan **GetX**, sehingga perubahan data
 
 | Widget | Kegunaan |
 |---|---|
-| `GetMaterialApp` | Root aplikasi dengan dukungan GetX |
-| `Scaffold` | Struktur dasar tiap halaman |
-| `AppBar` | Header halaman utama |
+| `GetMaterialApp`       | Root aplikasi dengan dukungan GetX |
+| `Scaffold`             | Struktur dasar tiap halaman |
+| `AppBar`               | Header halaman utama |
 | `FloatingActionButton` | Tombol tambah surat |
-| `Container` | Membungkus elemen dengan dekorasi warna dan border radius |
+| `Container`            | Membungkus elemen dengan dekorasi warna dan border radius |
 | `SafeArea` | Menghindari konten tertutup status bar |
 | `Column` | Menyusun widget secara vertikal |
 | `Row` | Menyusun widget secara horizontal |
@@ -96,3 +96,75 @@ State management pada aplikasi ini menggunakan **GetX**, sehingga perubahan data
 ---
 
 # 🚀 Mini Project 2
+Pada Mini Project 2, aplikasi Arkivee dikembangkan lebih lanjut dengan menambahkan beberapa fitur dan sudah terintegrasi dengan database menggunakan supabase
+
+---
+
+## ✨ Fitur Tambahan
+
+- **CRUD Surat yang Terintegrasi Database Supabase** — Setiap surat disimpan dengan `user_id`, sehingga setiap pengguna hanya bisa melihat surat miliknya sendiri.
+- **Validasi CRUD** — Setelah melakukan Create, Update, dan Delete akan menampilkan notifikasi validasi dari aksi yang dilakukan.
+- **Register Akun** — Pengguna dapat membuat akun baru menggunakan email dan password sebelum menggunakan aplikasi
+- **Login Akun** — Pengguna dapat masuk ke aplikasi menggunakan akun yang sudah terdaftar
+- **Validasi Form Login & Register** — Input email dan password divalidasi untuk memastikan format yang benar sebelum diproses
+- **Autentikasi Supabase** — Sistem login dan register terhubung langsung dengan Supabase Authentication sehingga akun tersimpan secara online
+- **Search Surat** — Pengguna dapat mencari surat berdasarkan **nomor surat** atau **perihal surat**
+- **Filter Surat** — Surat dapat difilter berdasarkan kategori **Semua Surat, Surat Masuk, atau Surat Keluar**
+- **Sorting Surat** — Daftar surat dapat diurutkan berdasarkan tanggal **Terbaru** atau **Terlama**
+- **Light Mode & Dark Mode** — Pengguna dapat mengganti tampilan aplikasi antara mode terang dan mode gelap
+
+---
+
+## 🧩 Widget Tambahan
+
+| Widget                             | Kegunaan                                                                           |
+| ---------------------------------- | ---------------------------------------------------------------------------------- |
+| `TextFormField`                    | Input form dengan sistem validasi (digunakan pada login, register, dan form surat) |
+| `Form`                             | Membungkus beberapa field input agar bisa divalidasi sekaligus                     |
+| `GlobalKey<FormState>`             | Mengontrol dan menjalankan validasi pada form                                      |
+| `DropdownButtonFormField`          | Dropdown dengan dukungan validasi form                                             |
+| `CircularProgressIndicator`        | Menampilkan indikator loading saat proses login atau register                      |
+| `InkWell`                          | Membuat kartu surat dapat ditekan (tap interaction)                                |
+| `LinearGradient`                   | Memberi efek gradasi warna pada container statistik di halaman Home                |
+| `TextEditingController`            | Mengontrol dan mengambil nilai dari input field                                    |
+| `Navigator`                        | Digunakan untuk navigasi kembali pada komponen header halaman                      |
+| `showDialog` / `Get.defaultDialog` | Menampilkan dialog konfirmasi seperti saat menghapus surat                         |
+| `Icon` (visibility toggle)         | Mengubah tampilan password menjadi visible / hidden pada form login dan register   |
+
+---
+
+## 🖼️ Tampilan Aplikasi Tambahan/Terbaru & Penjelasannya
+<table>
+  <tr>
+    <th>Login Page</th>
+    <th>Register Page</th>
+  </tr>  
+  <tr>
+    <td><img width="311" height="668" alt="image" src="https://github.com/user-attachments/assets/fe348992-d42d-4641-b99f-593d02bedc87" /></td>
+    <td><img width="308" height="665" alt="image" src="https://github.com/user-attachments/assets/397aef40-5c0e-4f86-ab1b-6fd10f5c2e08" /></td>
+  </tr>
+  <tr>
+    <td>
+        Pada halaman ini pengguna diminta untuk memasukkan email dan password yang sudah terdaftar untuk dapat mengakses aplikasi. Terdapat ikon visibility pada field password untuk menampilkan atau menyembunyikan                 password yang dimasukkan. Jika pengguna belum memiliki akun, tersedia tombol Register yang akan mengarahkan ke halaman pembuatan akun.
+    </td>
+    <td>
+        Halaman Register digunakan untuk membuat akun baru sebelum menggunakan aplikasi. Pengguna harus mengisi email, password, dan confirm password untuk memastikan password yang dimasukkan benar. Setelah proses                registrasi berhasil, pengguna akan diarahkan kembali ke halaman login untuk masuk ke aplikasi menggunakan akun yang telah dibuat.
+    </td>
+  </tr>
+  <tr>
+    <th>Home Page</th>
+    <th>Your Letter (List Surat)</th>
+  </tr>
+  <tr>
+    <td><img width="312" height="670" alt="image" src="https://github.com/user-attachments/assets/7ac78dc4-5703-4929-b4dc-7f6bccd16139" /></td>
+    <td><img width="309" height="671" alt="image" src="https://github.com/user-attachments/assets/351fefa0-d4ce-42d4-870c-a97ff74e1cc4" /></td>
+  </tr>
+  <tr>
+    <td>
+      Pada bagian kanan atas halaman terdapat tombol Dark Mode / Light Mode yang dapat digunakan untuk mengganti tema tampilan aplikasi sesuai preferensi pengguna. Selain itu juga terdapat tombol Logout yang memungkinkan        pengguna keluar dari akun dan kembali ke halaman login.
+    </td>
+    <td>
+      Pada bagian atas terdapat kolom pencarian yang memungkinkan pengguna mencari surat berdasarkan nomor atau perihal. Selain itu tersedia fitur filter kategori untuk menampilkan surat masuk atau keluar saja, serta           fitur sorting untuk mengurutkan surat berdasarkan tanggal terbaru atau terlama. Setiap surat ditampilkan dalam bentuk kartu yang memuat informasi singkat dan dilengkapi dengan tombol edit dan hapus.
+    </td>
+  </tr>
+</table>
